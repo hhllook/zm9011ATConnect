@@ -1,0 +1,452 @@
+﻿<Window x:Class="Zm9011.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:prism="http://prismlibrary.com/"
+        prism:ViewModelLocator.AutoWireViewModel="True"
+        xmlns:core="clr-namespace:Zm9011.Core;assembly=Zm9011.Core"
+        xmlns:behaviors="clr-namespace:Zm9011.Behaviors"
+        Title="ZM9011 模组 AT 调试工具"
+        Height="840" Width="1320" MinHeight="680" MinWidth="1024"
+        WindowStartupLocation="CenterScreen"
+        Background="{StaticResource Brush.Canvas}"
+        FontFamily="Microsoft YaHei UI"
+        FontSize="13"
+        UseLayoutRounding="True"
+        SnapsToDevicePixels="True"
+        ToolTipService.InitialShowDelay="350"
+        ToolTipService.ShowDuration="20000"
+        TextOptions.TextFormattingMode="Display">
+
+    <Window.InputBindings>
+        <KeyBinding Modifiers="Control" Key="Enter" Command="{Binding SendCustomCommand}"/>
+    </Window.InputBindings>
+
+    <Window.Resources>
+        <!-- 左侧导航项：浅灰底、选中品牌蓝 -->
+        <Style x:Key="NavItemStyle" TargetType="ListBoxItem">
+            <Setter Property="Foreground" Value="#4A4F57"/>
+            <Setter Property="Margin" Value="0,1"/>
+            <Setter Property="Padding" Value="12,9"/>
+            <Setter Property="FontSize" Value="13.5"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <Border x:Name="Bd" Background="Transparent" CornerRadius="8"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#F0F1F4"/>
+                                <Setter Property="Foreground" Value="{StaticResource Brush.TextPrimary}"/>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{StaticResource Brush.AccentSoft}"/>
+                                <Setter Property="Foreground" Value="{StaticResource Brush.Accent}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- 连接按钮：已连接时切换为浅红描边，提示可断开 -->
+        <Style x:Key="ConnectButtonStyle" TargetType="Button" BasedOn="{StaticResource AtPrimaryButton}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsOpen}" Value="True">
+                    <Setter Property="Background" Value="#FFF2F2"/>
+                    <Setter Property="Foreground" Value="{StaticResource Brush.Danger}"/>
+                    <Setter Property="BorderBrush" Value="#F7D4D5"/>
+                    <Setter Property="BorderThickness" Value="1"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="218"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- ================= 左侧导航栏 ================= -->
+        <Border Grid.Column="0" Background="{StaticResource Brush.SidebarBackground}"
+                BorderBrush="{StaticResource Brush.Border}" BorderThickness="0,0,1,0">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- 品牌区 -->
+                <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="20,24,16,22">
+                    <Border Width="36" Height="36" CornerRadius="10" Background="{StaticResource Brush.Accent}">
+                        <TextBlock Text="Z" Foreground="White" FontSize="19" FontWeight="Bold"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <StackPanel Margin="11,0,0,0" VerticalAlignment="Center">
+                        <TextBlock Text="ZM9011" Foreground="{StaticResource Brush.TextPrimary}"
+                                   FontSize="17" FontWeight="Bold"/>
+                        <TextBlock Text="模组 AT 调试工具" Foreground="{StaticResource Brush.TextMuted}"
+                                   FontSize="11" Margin="0,1,0,0"/>
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- 功能导航 -->
+                <ListBox Grid.Row="1" ItemsSource="{Binding Pages}"
+                         SelectedItem="{Binding CurrentPage}"
+                         Background="Transparent" BorderThickness="0"
+                         Margin="12,0,12,0"
+                         ItemContainerStyle="{StaticResource NavItemStyle}"
+                         ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid ToolTip="{Binding Subtitle}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Border x:Name="Indicator" Width="3" Height="14" CornerRadius="2"
+                                        Background="Transparent" Margin="0,0,10,0"
+                                        VerticalAlignment="Center"/>
+                                <TextBlock Grid.Column="1" Text="{Binding DisplayName}"
+                                           VerticalAlignment="Center"/>
+                            </Grid>
+                            <DataTemplate.Triggers>
+                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=IsSelected}" Value="True">
+                                    <Setter TargetName="Indicator" Property="Background" Value="{StaticResource Brush.Accent}"/>
+                                </DataTrigger>
+                            </DataTemplate.Triggers>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+
+                <!-- 底部信息 -->
+                <StackPanel Grid.Row="2" Margin="20,0,20,18">
+                    <Border Height="1" Background="#E8EAEE" Margin="0,0,0,12"/>
+                    <TextBlock Text="AT Command Console" Foreground="#B4B7BE" FontSize="10.5"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- ================= 右侧主区域 ================= -->
+        <Grid Grid.Column="1" x:Name="MainAreaGrid">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="280" MinHeight="150"/>
+            </Grid.RowDefinitions>
+
+            <!-- 顶部：连接栏 -->
+            <Border Grid.Row="0" Background="White" BorderBrush="{StaticResource Brush.Border}"
+                    BorderThickness="0,0,0,1" Padding="20,12">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock Text="串口" Style="{StaticResource AtFieldLabel}" Margin="0,0,6,0"/>
+                        <ComboBox ItemsSource="{Binding Ports}" SelectedItem="{Binding SelectedPort}"
+                                  Width="126" Margin="0,0,2,0"/>
+                        <Button Content="刷新" Command="{Binding RefreshPortsCommand}"
+                                Style="{StaticResource AtButton}" MinWidth="56" Padding="10,6"
+                                ToolTip="重新枚举本机串口"/>
+                        <Border Width="1" Height="18" Background="{StaticResource Brush.Border}" Margin="10,0"/>
+                        <TextBlock Text="波特率" Style="{StaticResource AtFieldLabel}" Margin="0,0,6,0"/>
+                        <ComboBox ItemsSource="{Binding BaudRateOptions}" SelectedItem="{Binding BaudRate}"
+                                  Width="104" Margin="0,0,6,0"/>
+                        <CheckBox Content="自动探测波特率" IsChecked="{Binding AutoDetect}"
+                                  VerticalAlignment="Center" Margin="4,0,0,0"
+                                  ToolTip="打开串口后若无 AT 响应，自动从高到低遍历波特率试探"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                        <!-- 连接状态指示灯 -->
+                        <Border Background="{StaticResource Brush.Subtle}" BorderBrush="{StaticResource Brush.Border}"
+                                BorderThickness="1" CornerRadius="16" Padding="12,6" Margin="0,0,12,0">
+                            <StackPanel Orientation="Horizontal">
+                                <Ellipse Width="7" Height="7" Margin="0,0,7,0" VerticalAlignment="Center">
+                                    <Ellipse.Style>
+                                        <Style TargetType="Ellipse">
+                                            <Setter Property="Fill" Value="#B4B7BE"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsOpen}" Value="True">
+                                                    <Setter Property="Fill" Value="{StaticResource Brush.Success}"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Ellipse.Style>
+                                </Ellipse>
+                                <TextBlock Text="{Binding ConnectionStatus}" FontSize="12"
+                                           Foreground="{StaticResource Brush.TextSecondary}"
+                                           VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Border>
+                        <Button Content="{Binding OpenButtonText}" Command="{Binding OpenCloseCommand}"
+                                Style="{StaticResource ConnectButtonStyle}" MinWidth="92"
+                                ToolTip="打开或关闭串口连接"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- 页面标题 + 内容区 -->
+            <Grid Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="24,18,24,4"
+                            VerticalAlignment="Center">
+                    <TextBlock Text="{Binding CurrentPage.DisplayName}" FontSize="20" FontWeight="Bold"
+                               Foreground="{StaticResource Brush.TextPrimary}"/>
+                    <Border Width="1" Height="14" Background="{StaticResource Brush.Border}" Margin="12,0"/>
+                    <TextBlock Text="{Binding CurrentPage.Subtitle}"
+                               FontSize="12" Foreground="{StaticResource Brush.TextMuted}"
+                               VerticalAlignment="Center"/>
+                </StackPanel>
+
+                <ContentControl Grid.Row="1" Margin="24,8,24,0"
+                                prism:RegionManager.RegionName="{x:Static core:RegionNames.ContentRegion}"/>
+            </Grid>
+
+            <!-- 可拖动分隔条 -->
+            <GridSplitter x:Name="LogSplitter" Grid.Row="2" Style="{StaticResource AtSplitter}"
+                          ToolTip="拖动可调整收发日志区域高度"/>
+
+            <!-- 底部：指令输入 + 收发日志（实时短信页隐藏） -->
+            <Grid x:Name="LogPanel" Grid.Row="3" Background="White">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- 自定义指令输入行 -->
+                <Border Grid.Row="0" Background="White" BorderBrush="{StaticResource Brush.Border}"
+                        BorderThickness="0,0,0,1" Padding="16,11">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Grid Grid.Column="0">
+                            <TextBox Text="{Binding CustomCommand, UpdateSourceTrigger=PropertyChanged}"
+                                     Margin="0" MinHeight="38" FontSize="13"
+                                     FontFamily="Consolas, Microsoft YaHei UI"
+                                     VerticalContentAlignment="Center">
+                                <TextBox.InputBindings>
+                                    <KeyBinding Key="Enter" Command="{Binding SendCustomCommand}"/>
+                                </TextBox.InputBindings>
+                            </TextBox>
+                            <!-- 空内容时的占位提示 -->
+                            <TextBlock Text="输入 AT 指令，回车发送（Ctrl+Enter 亦可）"
+                                       IsHitTestVisible="False" Foreground="#B4B7BE" FontSize="12.5"
+                                       Margin="13,0,0,0" VerticalAlignment="Center">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding CustomCommand}" Value="">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </Grid>
+
+                        <Button Grid.Column="1" Content="↑" Command="{Binding SendCustomCommand}"
+                                Style="{StaticResource AtSendButton}"
+                                behaviors:AtActionTracker.Title="自定义指令"
+                                ToolTip="发送指令（Enter / Ctrl+Enter）"/>
+                    </Grid>
+                </Border>
+
+                <!-- 日志工具栏 -->
+                <Border Grid.Row="1" Background="#FAFAFB" BorderBrush="{StaticResource Brush.Border}"
+                        BorderThickness="0,0,0,1" Padding="16,7">
+                    <Grid>
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <TextBlock Text="收发日志" FontSize="12.5" FontWeight="SemiBold"
+                                       Foreground="{StaticResource Brush.TextPrimary}"/>
+                            <Border Background="{StaticResource Brush.AccentSoft}" CornerRadius="8" Padding="7,1"
+                                    Margin="9,0,0,0" VerticalAlignment="Center">
+                                <TextBlock Text="{Binding LogSessions.Count}" FontSize="11"
+                                           Foreground="{StaticResource Brush.Accent}" VerticalAlignment="Center"/>
+                            </Border>
+                            <TextBlock Text="最新模块在上" FontSize="11" Foreground="#B4B7BE"
+                                       Margin="10,0,0,0" VerticalAlignment="Center"/>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right"
+                                    VerticalAlignment="Center">
+                            <Button Content="清空" Command="{Binding ClearLogCommand}"
+                                    Style="{StaticResource AtGhostButton}" ToolTip="清空全部日志模块"/>
+                            <Button Content="导出" Command="{Binding SaveLogCommand}"
+                                    Style="{StaticResource AtGhostButton}" ToolTip="将日志按模块导出为文本文件"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <!-- 日志模块列表：一次按钮点击 = 一个模块 -->
+                <Grid Grid.Row="2" Background="#FAFAFB">
+                    <ListBox x:Name="LogList" ItemsSource="{Binding LogSessions}"
+                             Background="Transparent" BorderThickness="0" Padding="12,10"
+                             ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                             VirtualizingPanel.ScrollUnit="Pixel"
+                             VirtualizingPanel.VirtualizationMode="Recycling">
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="ListBoxItem">
+                                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                <Setter Property="Padding" Value="0"/>
+                                <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="ListBoxItem">
+                                            <ContentPresenter/>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Border Background="White" BorderBrush="{StaticResource Brush.Border}"
+                                        BorderThickness="1" CornerRadius="10" Padding="12,9"
+                                        Margin="0,0,0,8">
+                                    <StackPanel>
+                                        <!-- 首行：按钮功能名 + 时间 + 执行状态 -->
+                                        <Grid>
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="{Binding Title}" FontSize="12.5"
+                                                           FontWeight="SemiBold"
+                                                           Foreground="{StaticResource Brush.TextPrimary}"/>
+                                                <TextBlock Text="{Binding TimeText}" FontSize="11"
+                                                           Foreground="#A6A9B0" Margin="8,0,0,0"
+                                                           VerticalAlignment="Center"/>
+                                            </StackPanel>
+
+                                            <Border HorizontalAlignment="Right" VerticalAlignment="Center"
+                                                    CornerRadius="9" Padding="8,2">
+                                                <Border.Style>
+                                                    <Style TargetType="Border">
+                                                        <Setter Property="Background" Value="#F0F1F4"/>
+                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding HasStatus}" Value="True">
+                                                                <Setter Property="Visibility" Value="Visible"/>
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding Status}" Value="成功">
+                                                                <Setter Property="Background" Value="#E9F9F1"/>
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding Status}" Value="失败">
+                                                                <Setter Property="Background" Value="#FFEFEF"/>
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding Status}" Value="超时">
+                                                                <Setter Property="Background" Value="#FFF7E8"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Border.Style>
+                                                <TextBlock Text="{Binding Status}" FontSize="11">
+                                                    <TextBlock.Style>
+                                                        <Style TargetType="TextBlock">
+                                                            <Setter Property="Foreground" Value="#6B7078"/>
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding Status}" Value="成功">
+                                                                    <Setter Property="Foreground" Value="#0E9F6E"/>
+                                                                </DataTrigger>
+                                                                <DataTrigger Binding="{Binding Status}" Value="失败">
+                                                                    <Setter Property="Foreground" Value="#D92D20"/>
+                                                                </DataTrigger>
+                                                                <DataTrigger Binding="{Binding Status}" Value="超时">
+                                                                    <Setter Property="Foreground" Value="#B45309"/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </TextBlock.Style>
+                                                </TextBlock>
+                                            </Border>
+                                        </Grid>
+
+                                        <!-- 命令 / 回复行 -->
+                                        <ItemsControl ItemsSource="{Binding Lines}" Margin="0,6,0,0">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding DisplayText}"
+                                                               TextWrapping="Wrap"
+                                                               FontFamily="Consolas, Microsoft YaHei UI"
+                                                               FontSize="11.5" Margin="0,1">
+                                                        <TextBlock.Style>
+                                                            <Style TargetType="TextBlock">
+                                                                <Setter Property="Foreground" Value="#4A4F57"/>
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding Level}" Value="Tx">
+                                                                        <Setter Property="Foreground" Value="#2F6FEB"/>
+                                                                    </DataTrigger>
+                                                                    <DataTrigger Binding="{Binding Level}" Value="Urc">
+                                                                        <Setter Property="Foreground" Value="#7A6A00"/>
+                                                                    </DataTrigger>
+                                                                    <DataTrigger Binding="{Binding Level}" Value="Warn">
+                                                                        <Setter Property="Foreground" Value="#B45309"/>
+                                                                    </DataTrigger>
+                                                                    <DataTrigger Binding="{Binding Level}" Value="Error">
+                                                                        <Setter Property="Foreground" Value="#D92D20"/>
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </TextBlock.Style>
+                                                    </TextBlock>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+
+                                        <!-- 超长模块截断提示 -->
+                                        <TextBlock Text="{Binding TruncatedText}" FontSize="11"
+                                                   Foreground="#B4B7BE" Margin="0,4,0,0">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsTruncated}" Value="True">
+                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+
+                    <!-- 空状态提示 -->
+                    <TextBlock Text="暂无收发数据" Foreground="#C2C5CC" FontSize="12"
+                               HorizontalAlignment="Center" VerticalAlignment="Center"
+                               IsHitTestVisible="False">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding LogSessions.Count}" Value="0">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </Grid>
+            </Grid>
+        </Grid>
+    </Grid>
+</Window>

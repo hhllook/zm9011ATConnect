@@ -1,0 +1,84 @@
+<UserControl x:Class="Zm9011.Modules.ModuleName.Views.FotaView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:prism="http://prismlibrary.com/"
+             prism:ViewModelLocator.AutoWireViewModel="True">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel MaxWidth="1180" HorizontalAlignment="Stretch">
+
+            <GroupBox Header="发起 FOTA 升级 +ZDM" Style="{StaticResource AtGroupBox}">
+                <StackPanel>
+                    <WrapPanel>
+                        <Button Content="OMA DM 升级" Command="{Binding StartOmaDmCommand}" Style="{StaticResource AtButton}"
+                                ToolTip="命令 +ZDM=&quot;1&quot; · 发起基于 OMA DM 的 FOTA 升级（手册 6.3）"/>
+                    </WrapPanel>
+                    <WrapPanel Margin="0,8,0,0">
+                        <TextBlock Text="FTP 地址:" Style="{StaticResource AtFieldLabel}" Margin="3,0,6,0"/>
+                        <TextBox Text="{Binding FtpUrl}" Style="{StaticResource AtInput}" Width="460"/>
+                        <Button Content="FTP 升级" Command="{Binding StartFtpCommand}" Style="{StaticResource AtButton}"
+                                ToolTip="命令 +ZDM= · 从指定的 FTP 地址发起 FOTA 升级（手册 6.5）"/>
+                    </WrapPanel>
+                    <WrapPanel Margin="0,6,0,0">
+                        <TextBlock Text="HTTP 地址:" Style="{StaticResource AtFieldLabel}" Margin="3,0,6,0"/>
+                        <TextBox Text="{Binding HttpUrl}" Style="{StaticResource AtInput}" Width="460"/>
+                        <Button Content="HTTP 升级" Command="{Binding StartHttpCommand}" Style="{StaticResource AtButton}"
+                                ToolTip="命令 +ZDM= · 从指定的 HTTP/HTTPS 地址发起 FOTA 升级（手册 6.6）"/>
+                    </WrapPanel>
+                    <WrapPanel Margin="0,6,0,0">
+                        <TextBlock Text="设备文件:" Style="{StaticResource AtFieldLabel}" Margin="3,0,6,0"/>
+                        <TextBox Text="{Binding LocalFilePath}" Style="{StaticResource AtInput}" Width="460"/>
+                        <Button Content="本地升级" Command="{Binding StartLocalFileCommand}" Style="{StaticResource AtButton}"
+                                ToolTip="命令 +ZDM= · 从指定的设备文件路径发起 FOTA 升级（手册 6.7）"/>
+                    </WrapPanel>
+                </StackPanel>
+            </GroupBox>
+
+            <GroupBox Header="升级状态与结果" Style="{StaticResource AtGroupBox}">
+                <WrapPanel>
+                    <Button Content="查询升级状态" Command="{Binding QueryStatusCommand}" Style="{StaticResource AtButton}"
+                            ToolTip="命令 +ZDM? · 查询 FOTA 升级的状态（手册 6.4）"/>
+                    <Button Content="查询安装结果" Command="{Binding QueryInstallResultCommand}" Style="{StaticResource AtButton}"
+                            ToolTip="命令 +ZDM=&quot;2&quot; · 获取 FOTA 安装结果（手册 6.1）"/>
+                    <Button Content="清理过程文件" Command="{Binding ClearFilesCommand}" Style="{StaticResource AtButton}"
+                            ToolTip="命令 +ZDM=&quot;3&quot; · 清除 FOTA 安装过程文件（手册 6.2）"/>
+                    <Button Content="确认下载" Command="{Binding ConfirmDownloadCommand}" Style="{StaticResource AtButton}"
+                            ToolTip="命令 +ZDM=&quot;4&quot; · 确认下载可选升级包（手册 6.8）"/>
+                    <Button Content="取消下载" Command="{Binding CancelDownloadCommand}" Style="{StaticResource AtButton}"
+                            ToolTip="命令 +ZDM=&quot;5&quot; · 取消下载可选升级包（手册 6.9）"/>
+                </WrapPanel>
+            </GroupBox>
+
+            <GroupBox Header="AT 口推送升级包 +FOTAPUSH（USB 每包≤512 字节 / UART ≤1024）" Style="{StaticResource AtGroupBox}">
+                <StackPanel>
+                    <WrapPanel>
+                        <TextBlock Text="本地文件:" Style="{StaticResource AtFieldLabel}" Margin="3,0,6,0"/>
+                        <TextBox Text="{Binding PushLocalPath}" Style="{StaticResource AtInput}" Width="380"/>
+                        <Button Content="浏览..." Command="{Binding BrowseCommand}" Style="{StaticResource AtButton}"
+                                ToolTip="选择本地升级包文件（界面操作，不发送 AT 命令）"/>
+                    </WrapPanel>
+                    <WrapPanel Margin="0,6,0,0">
+                        <TextBlock Text="模组路径:" Style="{StaticResource AtFieldLabel}" Margin="3,0,6,0"/>
+                        <TextBox Text="{Binding PushModulePath}" Style="{StaticResource AtInput}" Width="380"/>
+                    </WrapPanel>
+                    <WrapPanel Margin="0,6,0,0">
+                        <TextBlock Text="每包字节:" Style="{StaticResource AtFieldLabel}" Margin="3,0,6,0"/>
+                        <ComboBox ItemsSource="{Binding ChunkSizes}" SelectedItem="{Binding PushChunkSize}" Style="{StaticResource AtCombo}" Width="90"/>
+                        <Button Content="开始推送" Command="{Binding PushFileCommand}" Style="{StaticResource AtButton}" FontWeight="SemiBold"
+                                ToolTip="命令 +FOTAPUSH=set · AT 口推送升级包：set → mid/end 分包 → check（手册 6.10）"/>
+                        <Button Content="校验升级包" Command="{Binding CheckPushedFileCommand}" Style="{StaticResource AtButton}"
+                                ToolTip="命令 +FOTAPUSH=check · 校验模组上的升级包文件（手册 6.10）"/>
+                        <Button Content="删除升级包" Command="{Binding DeletePushedFileCommand}" Style="{StaticResource AtButton}"
+                                ToolTip="命令 +FOTAPUSH=del · 删除模组上的升级包文件（手册 6.10）"/>
+                    </WrapPanel>
+                    <WrapPanel Margin="0,8,0,0">
+                        <TextBlock Text="进度:" Style="{StaticResource AtFieldLabel}" Margin="3,0,6,0"/>
+                        <ProgressBar Value="{Binding PushProgress}" Maximum="100" Width="260" Height="16"
+                                     VerticalAlignment="Center"/>
+                        <TextBlock Text="{Binding PushProgress, StringFormat={}{0:N1}\%}" VerticalAlignment="Center" Margin="8,0,0,0"/>
+                    </WrapPanel>
+                </StackPanel>
+            </GroupBox>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

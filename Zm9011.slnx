@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/Modules/">
+    <Project Path="Zm9011/Modules/Zm9011.Modules.ModuleName/Zm9011.Modules.ModuleName.csproj" />
+  </Folder>
+  <Folder Name="/Services/">
+    <Project Path="Zm9011/Services/Zm9011.Services.Interfaces/Zm9011.Services.Interfaces.csproj" />
+    <Project Path="Zm9011/Services/Zm9011.Services/Zm9011.Services.csproj" />
+  </Folder>
+  <Project Path="Zm9011/Zm9011.Core/Zm9011.Core.csproj" />
+  <Project Path="Zm9011/Zm9011/Zm9011.csproj" />
+</Solution>

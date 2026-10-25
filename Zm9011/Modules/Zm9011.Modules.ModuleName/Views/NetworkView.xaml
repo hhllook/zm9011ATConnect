@@ -1,0 +1,177 @@
+<UserControl x:Class="Zm9011.Modules.ModuleName.Views.NetworkView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:prism="http://prismlibrary.com/"
+             prism:ViewModelLocator.AutoWireViewModel="True">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel MaxWidth="1180" HorizontalAlignment="Stretch">
+
+            <GroupBox Header="网络注册状态" Style="{StaticResource AtGroupBox}">
+                <StackPanel>
+                    <WrapPanel>
+                        <TextBlock Text="CREG:" Style="{StaticResource AtFieldLabel}" Margin="3,0,6,0"/>
+                        <ComboBox Style="{StaticResource AtCombo}" Width="160" SelectedValue="{Binding CregMode}" SelectedValuePath="Tag"
+                                  ToolTip="0 不上报 / 1 仅状态 / 2 状态+位置">
+                            <ComboBoxItem Content="2 状态+位置(默认)" Tag="2"/>
+                            <ComboBoxItem Content="1 仅状态" Tag="1"/>
+                            <ComboBoxItem Content="0 不上报" Tag="0"/>
+                        </ComboBox>
+                        <Button Content="设置并查询 CREG" Command="{Binding QueryCregCommand}" Style="{StaticResource AtButton}"
+                                ToolTip="命令 +CREG · 设置 CS 网络注册上报模式并查询状态（手册 3.1）"/>
+                    </WrapPanel>
+                    <WrapPanel Margin="0,6,0,0">
+                        <TextBlock Text="CEREG:" Style="{StaticResource AtFieldLabel}" Margin="3,0,6,0"/>
+                        <ComboBox Style="{StaticResource AtCombo}" Width="160" SelectedValue="{Binding CeregMode}" SelectedValuePath="Tag"
+                                  ToolTip="0 不上报 / 1 仅状态 / 2 状态+位置">
+                            <ComboBoxItem Content="2 状态+位置(默认)" Tag="2"/>
+                            <ComboBoxItem Content="1 仅状态" Tag="1"/>
+                            <ComboBoxItem Content="0 不上报" Tag="0"/>
+                        </ComboBox>
+                        <Button Content="设置并查询 CEREG" Command="{Binding QueryCeregCommand}" Style="{StaticResource AtButton}"
+                                ToolTip="命令 +CEREG · 设置 EPS 网络注册上报模式并查询状态（手册 3.2）"/>
+                    </WrapPanel>
+                    <WrapPanel Margin="0,6,0,0">
+                        <TextBlock Text="CGREG:" Style="{StaticResource AtFieldLabel}" Margin="3,0,6,0"/>
+                        <ComboBox Style="{StaticResource AtCombo}" Width="160" SelectedValue="{Binding CgregMode}" SelectedValuePath="Tag"
+                                  ToolTip="0 不上报 / 1 仅状态 / 2 状态+位置">
+                            <ComboBoxItem Content="2 状态+位置(默认)" Tag="2"/>
+                            <ComboBoxItem Content="1 仅状态" Tag="1"/>
+                            <ComboBoxItem Content="0 不上报" Tag="0"/>
+                        </ComboBox>
+                        <Button Content="设置并查询 CGREG" Command="{Binding QueryCgregCommand}" Style="{StaticResource AtButton}"
+                                ToolTip="命令 +CGREG · 设置 PS 网络注册上报模式并查询状态（手册 3.7）"/>
+                    </WrapPanel>
+                </StackPanel>
+            </GroupBox>
+
+            <GroupBox Header="运营商 / 附着 / PLMN" Style="{StaticResource AtGroupBox}">
+                <StackPanel>
+                    <WrapPanel>
+                        <Button Content="查询运营商" Command="{Binding QueryCopsCommand}" Style="{StaticResource AtButton}"
+                                ToolTip="命令 +COPS? · 查询运营商选择状态（手册 3.3）"/>
+                        <Button Content="查询 PLMN" Command="{Binding QueryCpolCommand}" Style="{StaticResource AtButton}"
+                                ToolTip="命令 +CPOL? · 查询 PLMN 列表（手册 3.5）"/>
+                    </WrapPanel>
+                    <WrapPanel Margin="0,6,0,0">
+                        <TextBlock Text="附着:" Style="{StaticResource AtFieldLabel}" Margin="3,0,6,0"/>
+                        <ComboBox Style="{StaticResource AtCombo}" Width="110" SelectedValue="{Binding CgattState}" SelectedValuePath="Tag">
+                            <ComboBoxItem Content="1 附着" Tag="1"/>
+                            <ComboBoxItem Content="0 去附着" Tag="0"/>
+                        </ComboBox>
+                        <Button Content="查询附着" Command="{Binding QueryCgattCommand}" Style="{StaticResource AtButton}"
+                                ToolTip="命令 +CGATT? · 查询是否已附着到分组域（手册 3.4）"/>
+                        <Button Content="设置附着" Command="{Binding SetCgattCommand}" Style="{StaticResource AtButton}"
+                                ToolTip="命令 +CGATT= · 附着 / 去附着分组域：1 附着 / 0 去附着（手册 3.4）"/>
+                    </WrapPanel>
+                </StackPanel>
+            </GroupBox>
+
+            <GroupBox Header="时间 / 注册状态 / 选网模式" Style="{StaticResource AtGroupBox}">
+                <StackPanel>
+                    <WrapPanel>
+                        <Button Content="查询 NITZ 时间" Command="{Binding QueryZnitzCommand}" Style="{StaticResource AtButton}"
+                                ToolTip="命令 +ZNITZ? · 查询网络下发时间 NITZ（手册 3.6）"/>
+                        <Button Content="查询注册域" Command="{Binding QueryZpasCommand}" Style="{StaticResource AtButton}"
+                                ToolTip="命令 +ZPAS? · 查询网络注册域状态（手册 3.8）"/>
+                    </WrapPanel>
+                    <WrapPanel Margin="0,6,0,0">
+                        <TextBlock Text="选网模式:" Style="{StaticResource AtFieldLabel}" Margin="3,0,6,0"/>
+                        <ComboBox Style="{StaticResource AtCombo}" Width="190" SelectedValue="{Binding ZsntMode}" SelectedValuePath="Tag">
+                            <ComboBoxItem Content="16 自动(5G+4G+3G+2G)" Tag="16"/>
+                            <ComboBoxItem Content="17 4G+5G(SA、NSA)" Tag="17"/>
+                            <ComboBoxItem Content="18 SA only" Tag="18"/>
+                            <ComboBoxItem Content="6 4G only" Tag="6"/>
+                            <ComboBoxItem Content="7 3G+4G only" Tag="7"/>
+                            <ComboBoxItem Content="3 2G+3G only" Tag="3"/>
+                            <ComboBoxItem Content="2 3G only" Tag="2"/>
+                            <ComboBoxItem Content="1 2G only" Tag="1"/>
+                        </ComboBox>
+                        <Button Content="设置选网模式" Command="{Binding SetZsntCommand}" Style="{StaticResource AtButton}"
+                                ToolTip="命令 +ZSNT= · 设置选网模式（手册 3.9）"/>
+                        <Button Content="查询选网模式" Command="{Binding QueryZsntCommand}" Style="{StaticResource AtButton}"
+                                ToolTip="命令 +ZSNT? · 查询当前选网模式（手册 3.9）"/>
+                    </WrapPanel>
+                </StackPanel>
+            </GroupBox>
+
+            <GroupBox Header="小区信息 / 信号 / 5G 频段" Style="{StaticResource AtGroupBox}">
+                <WrapPanel>
+                    <Button Content="查询小区信息" Command="{Binding QueryCellInfoCommand}" Style="{StaticResource AtButton}"
+                            ToolTip="命令 +ZCELLINFO? · 查询注册网络小区信息（手册 3.10）"/>
+                    <Button Content="查询信号" Command="{Binding QueryZrssiCommand}" Style="{StaticResource AtButton}"
+                            ToolTip="命令 +ZRSSI? · 查询当前信号强度（手册 3.11）"/>
+                    <Button Content="查询 5G 支持频段" Command="{Binding QuerySp5gCommand}" Style="{StaticResource AtButton}"
+                            ToolTip="命令 +SP5GCMDS · 查询 5G 支持频段（手册 3.13）"/>
+                </WrapPanel>
+            </GroupBox>
+
+            <GroupBox Header="锁小区" Style="{StaticResource AtGroupBox}">
+                <StackPanel>
+                    <WrapPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,14,0">
+                            <TextBlock Text="4G EARFCN:" Style="{StaticResource AtFieldLabel}" Margin="3,0,6,0"/>
+                            <TextBox Text="{Binding Lock4gEarfcn}" Style="{StaticResource AtInput}" Width="90"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,14,0">
+                            <TextBlock Text="PCI:" Style="{StaticResource AtFieldLabel}" Margin="3,0,6,0"/>
+                            <TextBox Text="{Binding Lock4gPci}" Style="{StaticResource AtInput}" Width="70"/>
+                        </StackPanel>
+                        <Button Content="锁 4G 小区" Command="{Binding Lock4gCellCommand}" Style="{StaticResource AtButton}"
+                                ToolTip="命令 +ZLOCKCELL= · 锁定 4G 小区：EARFCN,PCI（手册 3.14）"/>
+                        <Button Content="查询 4G 小区" Command="{Binding QueryLock4gCellCommand}" Style="{StaticResource AtButton}"
+                                ToolTip="命令 +ZLOCKCELL? · 查询已锁定的 4G 小区（手册 3.14）"/>
+                    </WrapPanel>
+                    <WrapPanel Margin="0,6,0,0">
+                        <StackPanel Orientation="Horizontal" Margin="0,0,14,0">
+                            <TextBlock Text="5G PCI:" Style="{StaticResource AtFieldLabel}" Margin="3,0,6,0"/>
+                            <TextBox Text="{Binding Lock5gPci}" Style="{StaticResource AtInput}" Width="70"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,14,0">
+                            <TextBlock Text="NR-ARFCN:" Style="{StaticResource AtFieldLabel}" Margin="3,0,6,0"/>
+                            <TextBox Text="{Binding Lock5gArfcn}" Style="{StaticResource AtInput}" Width="90"/>
+                        </StackPanel>
+                        <Button Content="锁 5G 小区" Command="{Binding Lock5gCellCommand}" Style="{StaticResource AtButton}"
+                                ToolTip="命令 +ZLOCKNRCELL= · 锁定 5G 小区：PCI,NR-ARFCN（手册 3.15）"/>
+                        <Button Content="查询 5G 小区" Command="{Binding QueryLock5gCellCommand}" Style="{StaticResource AtButton}"
+                                ToolTip="命令 +ZLOCKNRCELL? · 查询已锁定的 5G 小区（手册 3.15）"/>
+                    </WrapPanel>
+                </StackPanel>
+            </GroupBox>
+
+            <GroupBox Header="锁频段（注意：锁定后无法恢复原始值，请先查询记录）" Style="{StaticResource AtGroupBox}">
+                <StackPanel>
+                    <WrapPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,14,0">
+                            <TextBlock Text="LTE 使能:" Style="{StaticResource AtFieldLabel}" Margin="3,0,6,0"/>
+                            <ComboBox Style="{StaticResource AtCombo}" Width="100" SelectedValue="{Binding LteBandEnable}" SelectedValuePath="Tag">
+                                <ComboBoxItem Content="1 锁定" Tag="1"/>
+                                <ComboBoxItem Content="0 不锁" Tag="0"/>
+                            </ComboBox>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="LTE 掩码(HEX):" Style="{StaticResource AtFieldLabel}" Margin="3,0,6,0"/>
+                            <TextBox Text="{Binding LteBandMask}" Style="{StaticResource AtInput}" Width="180"/>
+                        </StackPanel>
+                    </WrapPanel>
+                    <WrapPanel Margin="0,6,0,0">
+                        <Button Content="锁 4G 频段" Command="{Binding Lock4gBandCommand}" Style="{StaticResource AtButton}"
+                                ToolTip="命令 +ZNLOCKBAND= · 锁定 4G 频段：使能,GW 使能,掩码,保留（手册 3.16）"/>
+                        <Button Content="查询 4G 频段" Command="{Binding QueryLock4gBandCommand}" Style="{StaticResource AtButton}"
+                                ToolTip="命令 +ZNLOCKBAND? · 查询已锁定的 4G 频段（手册 3.16）"/>
+                    </WrapPanel>
+                    <WrapPanel Margin="0,10,0,0">
+                        <TextBlock Text="5G 频段列表(如 1,78):" Style="{StaticResource AtFieldLabel}" Margin="3,0,6,0"/>
+                        <TextBox Text="{Binding NrBandList}" Style="{StaticResource AtInput}" Width="180"/>
+                    </WrapPanel>
+                    <WrapPanel Margin="0,6,0,0">
+                        <Button Content="锁 5G 频段" Command="{Binding Lock5gBandCommand}" Style="{StaticResource AtButton}"
+                                ToolTip="命令 +ZNLOCKNRBAND= · 锁定 5G 频段，如 &quot;1,78&quot;（手册 3.17）"/>
+                        <Button Content="查询 5G 锁定频段" Command="{Binding QueryLock5gBandCommand}" Style="{StaticResource AtButton}"
+                                ToolTip="命令 +ZNLOCKNRBAND? · 查询已锁定的 5G 频段（手册 3.17）"/>
+                    </WrapPanel>
+                </StackPanel>
+            </GroupBox>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

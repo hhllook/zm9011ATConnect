@@ -1,0 +1,253 @@
+<UserControl x:Class="Zm9011.Modules.ModuleName.Views.TcpIpView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:prism="http://prismlibrary.com/"
+             prism:ViewModelLocator.AutoWireViewModel="True">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel MaxWidth="1180" HorizontalAlignment="Stretch">
+
+            <GroupBox Header="服务参数 +MYNETSRV" Style="{StaticResource AtGroupBox}">
+                <StackPanel>
+                    <WrapPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,16,0">
+                            <TextBlock Text="通道(1-4):" Style="{StaticResource AtFieldLabel}" Margin="3,0,6,0"/>
+                            <TextBox Text="{Binding SrvChannel}" Style="{StaticResource AtInput}" Width="55"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,16,0">
+                            <TextBlock Text="SocketID(0-5):" Style="{StaticResource AtFieldLabel}" Margin="3,0,6,0"/>
+                            <TextBox Text="{Binding SrvSocketId}" Style="{StaticResource AtInput}" Width="55"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,16,0">
+                            <TextBlock Text="类型:" Style="{StaticResource AtFieldLabel}" Margin="3,0,6,0"/>
+                            <ComboBox Style="{StaticResource AtCombo}" Width="125" SelectedValue="{Binding NetType}" SelectedValuePath="Tag">
+                                <ComboBoxItem Content="0 TCP Client" Tag="0"/>
+                                <ComboBoxItem Content="1 TCP Server" Tag="1"/>
+                                <ComboBoxItem Content="2 UDP Client" Tag="2"/>
+                            </ComboBox>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="数据模式:" Style="{StaticResource AtFieldLabel}" Margin="3,0,6,0"/>
+                            <ComboBox Style="{StaticResource AtCombo}" Width="95" SelectedValue="{Binding ViewModelMode}" SelectedValuePath="Tag">
+                                <ComboBoxItem Content="0 HEX" Tag="0"/>
+                                <ComboBoxItem Content="1 TEXT" Tag="1"/>
+                            </ComboBox>
+                        </StackPanel>
+                    </WrapPanel>
+                    <WrapPanel Margin="0,6,0,0">
+                        <StackPanel Orientation="Horizontal" Margin="0,0,16,0">
+                            <TextBlock Text="地址:端口:" Style="{StaticResource AtFieldLabel}" Margin="3,0,6,0"/>
+                            <TextBox Text="{Binding Address}" Style="{StaticResource AtInput}" Width="190"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,16,0">
+                            <TextBlock Text="读取模式:" Style="{StaticResource AtFieldLabel}" Margin="3,0,6,0"/>
+                            <ComboBox Style="{StaticResource AtCombo}" Width="110" SelectedValue="{Binding ReadMode}" SelectedValuePath="Tag">
+                                <ComboBoxItem Content="1 主动" Tag="1"/>
+                                <ComboBoxItem Content="0 被动" Tag="0"/>
+                            </ComboBox>
+                        </StackPanel>
+                        <Button Content="设置服务参数" Command="{Binding SetSrvCommand}" Style="{StaticResource AtButton}"
+                                ToolTip="命令 +MYNETSRV= · 设置 TCP/UDP 服务参数（手册 8.1）"/>
+                        <Button Content="查询服务参数" Command="{Binding QuerySrvCommand}" Style="{StaticResource AtButton}"
+                                ToolTip="命令 +MYNETSRV? · 查询 TCP/UDP 服务参数（手册 8.1）"/>
+                    </WrapPanel>
+                </StackPanel>
+            </GroupBox>
+
+            <GroupBox Header="连接开关 / 数据收发（非透传）" Style="{StaticResource AtGroupBox}">
+                <StackPanel>
+                    <WrapPanel>
+                        <TextBlock Text="SocketID:" Style="{StaticResource AtFieldLabel}" Margin="3,0,6,0"/>
+                        <TextBox Text="{Binding OpenSocketId}" Style="{StaticResource AtInput}" Width="55"/>
+                        <Button Content="开启连接" Command="{Binding OpenCommand}" Style="{StaticResource AtButton}"
+                                ToolTip="命令 +MYNETOPEN= · 开启服务 / 建立连接（手册 8.2）"/>
+                        <Button Content="查询连接" Command="{Binding QueryOpenCommand}" Style="{StaticResource AtButton}"
+                                ToolTip="命令 +MYNETOPEN? · 查询连接状态（手册 8.2）"/>
+                        <Button Content="关闭连接" Command="{Binding CloseCommand}" Style="{StaticResource AtButton}"
+                                ToolTip="命令 +MYNETCLOSE= · 关闭指定 Socket 连接（手册 8.5）"/>
+                    </WrapPanel>
+                    <WrapPanel Margin="0,6,0,0">
+                        <TextBlock Text="读 SocketID:" Style="{StaticResource AtFieldLabel}" Margin="3,0,6,0"/>
+                        <TextBox Text="{Binding ReadSocketId}" Style="{StaticResource AtInput}" Width="55"/>
+                        <TextBlock Text="最大长度(1-1460):" Style="{StaticResource AtFieldLabel}" Margin="14,0,6,0"/>
+                        <TextBox Text="{Binding ReadLength}" Style="{StaticResource AtInput}" Width="75"/>
+                        <Button Content="读取数据" Command="{Binding ReadDataCommand}" Style="{StaticResource AtButton}"
+                                ToolTip="命令 +MYNETREAD= · 读取指定 Socket 的数据（手册 8.3）"/>
+                    </WrapPanel>
+                    <WrapPanel Margin="0,6,0,0">
+                        <TextBlock Text="写 SocketID:" Style="{StaticResource AtFieldLabel}" Margin="3,0,6,0"/>
+                        <TextBox Text="{Binding WriteSocketId}" Style="{StaticResource AtInput}" Width="55"/>
+                        <TextBlock Text="数据:" Style="{StaticResource AtFieldLabel}" Margin="14,0,6,0"/>
+                        <TextBox Text="{Binding WriteText, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource AtInput}" Width="310"/>
+                        <CheckBox Content="HEX 编码" IsChecked="{Binding WriteHex}" VerticalAlignment="Center" Margin="8,0,0,0"
+                                  ToolTip="勾选后按十六进制解析发送内容"/>
+                        <Button Content="发送数据" Command="{Binding WriteDataCommand}" Style="{StaticResource AtButton}" FontWeight="SemiBold"
+                                ToolTip="命令 +MYNETWRITE= · 向指定 Socket 写入数据（手册 8.4）"/>
+                    </WrapPanel>
+                </StackPanel>
+            </GroupBox>
+
+            <GroupBox Header="TCP Server 客户端接入 +MYNETACCEPT（配合 +MYURCCLIENT 上报）" Style="{StaticResource AtGroupBox}">
+                <WrapPanel>
+                    <TextBlock Text="客户端 SocketID:" Style="{StaticResource AtFieldLabel}" Margin="3,0,6,0"/>
+                    <TextBox Text="{Binding ClientSocketId}" Style="{StaticResource AtInput}" Width="55"/>
+                    <TextBlock Text="动作:" Style="{StaticResource AtFieldLabel}" Margin="14,0,6,0"/>
+                    <ComboBox Style="{StaticResource AtCombo}" Width="100" SelectedValue="{Binding AcceptAction}" SelectedValuePath="Tag">
+                        <ComboBoxItem Content="0 接受" Tag="0"/>
+                        <ComboBoxItem Content="1 拒绝" Tag="1"/>
+                    </ComboBox>
+                    <TextBlock Text="传输模式:" Style="{StaticResource AtFieldLabel}" Margin="14,0,6,0"/>
+                    <ComboBox Style="{StaticResource AtCombo}" Width="120" SelectedValue="{Binding TransportMode}" SelectedValuePath="Tag">
+                        <ComboBoxItem Content="0 非透传" Tag="0"/>
+                        <ComboBoxItem Content="1 透传" Tag="1"/>
+                    </ComboBox>
+                    <Button Content="接受客户端" Command="{Binding AcceptClientCommand}" Style="{StaticResource AtButton}"
+                            ToolTip="命令 +MYNETACCEPT= · 接受或拒绝 TCP Server 的客户端接入请求（手册 8.17）"/>
+                </WrapPanel>
+            </GroupBox>
+
+            <GroupBox Header="透明传输 +MYNETCREATE（CONNECT 后数据直传，+++ 退出）" Style="{StaticResource AtGroupBox}">
+                <StackPanel>
+                    <WrapPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,16,0">
+                            <TextBlock Text="通道:" Style="{StaticResource AtFieldLabel}" Margin="3,0,6,0"/>
+                            <TextBox Text="{Binding CreateChannel}" Style="{StaticResource AtInput}" Width="55"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,16,0">
+                            <TextBlock Text="类型:" Style="{StaticResource AtFieldLabel}" Margin="3,0,6,0"/>
+                            <ComboBox Style="{StaticResource AtCombo}" Width="125" SelectedValue="{Binding CreateNetType}" SelectedValuePath="Tag">
+                                <ComboBoxItem Content="0 TCP Client" Tag="0"/>
+                                <ComboBoxItem Content="1 TCP Server" Tag="1"/>
+                                <ComboBoxItem Content="2 UDP Client" Tag="2"/>
+                            </ComboBox>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="SocketID:" Style="{StaticResource AtFieldLabel}" Margin="3,0,6,0"/>
+                            <TextBox Text="{Binding CreateSocketId}" Style="{StaticResource AtInput}" Width="55"/>
+                        </StackPanel>
+                    </WrapPanel>
+                    <WrapPanel Margin="0,6,0,0">
+                        <StackPanel Orientation="Horizontal" Margin="0,0,16,0">
+                            <TextBlock Text="服务器:" Style="{StaticResource AtFieldLabel}" Margin="3,0,6,0"/>
+                            <TextBox Text="{Binding CreateAddress}" Style="{StaticResource AtInput}" Width="170"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,16,0">
+                            <TextBlock Text="端口:" Style="{StaticResource AtFieldLabel}" Margin="3,0,6,0"/>
+                            <TextBox Text="{Binding CreatePort}" Style="{StaticResource AtInput}" Width="80"/>
+                        </StackPanel>
+                        <CheckBox Content="断线自动重连" IsChecked="{Binding AutoReconnect}" VerticalAlignment="Center" Margin="4,0,0,0"/>
+                    </WrapPanel>
+                    <WrapPanel Margin="0,6,0,0">
+                        <Button Content="建立透传" Command="{Binding CreateTransparentCommand}" Style="{StaticResource AtButton}"
+                                ToolTip="命令 +MYNETCREATE= · 开启透明传输服务，返回 CONNECT 后进入透传（手册 8.6）"/>
+                        <Button Content="发送透传数据" Command="{Binding SendTransparentDataCommand}" Style="{StaticResource AtButton}"
+                                ToolTip="透传数据 · 在已建立的透传通道中直接发送数据（不走 AT 命令）"/>
+                        <Button Content="退出透传" Command="{Binding ExitTransparentCommand}" Style="{StaticResource AtButton}"
+                                ToolTip="命令 +++ · 退出透明传输，前后需静默 1 秒（手册 2.11 / 8.6）"/>
+                    </WrapPanel>
+                </StackPanel>
+            </GroupBox>
+
+            <GroupBox Header="FTP 服务" Style="{StaticResource AtGroupBox}">
+                <StackPanel>
+                    <WrapPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,16,0">
+                            <TextBlock Text="通道:" Style="{StaticResource AtFieldLabel}" Margin="3,0,6,0"/>
+                            <TextBox Text="{Binding FtpChannel}" Style="{StaticResource AtInput}" Width="55"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,16,0">
+                            <TextBlock Text="服务器(IP:21):" Style="{StaticResource AtFieldLabel}" Margin="3,0,6,0"/>
+                            <TextBox Text="{Binding FtpHost}" Style="{StaticResource AtInput}" Width="180"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,16,0">
+                            <TextBlock Text="用户名:" Style="{StaticResource AtFieldLabel}" Margin="3,0,6,0"/>
+                            <TextBox Text="{Binding FtpUser}" Style="{StaticResource AtInput}" Width="110"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="密码:" Style="{StaticResource AtFieldLabel}" Margin="3,0,6,0"/>
+                            <TextBox Text="{Binding FtpPassword}" Style="{StaticResource AtInput}" Width="110"/>
+                        </StackPanel>
+                    </WrapPanel>
+                    <WrapPanel Margin="0,6,0,0">
+                        <StackPanel Orientation="Horizontal" Margin="0,0,16,0">
+                            <TextBlock Text="模式:" Style="{StaticResource AtFieldLabel}" Margin="3,0,6,0"/>
+                            <ComboBox Style="{StaticResource AtCombo}" Width="100" SelectedValue="{Binding FtpMode}" SelectedValuePath="Tag">
+                                <ComboBoxItem Content="1 被动" Tag="1"/>
+                                <ComboBoxItem Content="0 主动" Tag="0"/>
+                            </ComboBox>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,16,0">
+                            <TextBlock Text="超时(s):" Style="{StaticResource AtFieldLabel}" Margin="3,0,6,0"/>
+                            <TextBox Text="{Binding FtpTimeout}" Style="{StaticResource AtInput}" Width="55"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,16,0">
+                            <TextBlock Text="类型:" Style="{StaticResource AtFieldLabel}" Margin="3,0,6,0"/>
+                            <ComboBox Style="{StaticResource AtCombo}" Width="100" SelectedValue="{Binding FtpType}" SelectedValuePath="Tag">
+                                <ComboBoxItem Content="0 二进制" Tag="0"/>
+                                <ComboBoxItem Content="1 文本" Tag="1"/>
+                            </ComboBox>
+                        </StackPanel>
+                        <Button Content="启动 FTP" Command="{Binding FtpOpenCommand}" Style="{StaticResource AtButton}"
+                                ToolTip="命令 +MYFTPOPEN= · 启动 FTP 服务并连接服务器（手册 8.11）"/>
+                        <Button Content="关闭 FTP" Command="{Binding FtpCloseCommand}" Style="{StaticResource AtButton}"
+                                ToolTip="命令 +MYFTPCLOSE= · 关闭 FTP 文件流（手册 8.16）"/>
+                    </WrapPanel>
+                    <WrapPanel Margin="0,6,0,0">
+                        <TextBlock Text="文件名:" Style="{StaticResource AtFieldLabel}" Margin="3,0,6,0"/>
+                        <TextBox Text="{Binding FtpFile}" Style="{StaticResource AtInput}" Width="220"/>
+                        <Button Content="查询文件大小" Command="{Binding FtpSizeCommand}" Style="{StaticResource AtButton}"
+                                ToolTip="命令 +MYFTPSIZE= · 获取 FTP 文件大小（手册 8.12）"/>
+                        <Button Content="下载文件" Command="{Binding FtpGetCommand}" Style="{StaticResource AtButton}"
+                                ToolTip="命令 +MYFTPGET= · 从 FTP 服务器下载文件（手册 8.13）"/>
+                    </WrapPanel>
+                    <WrapPanel Margin="0,6,0,0">
+                        <TextBlock Text="上传内容:" Style="{StaticResource AtFieldLabel}" Margin="3,0,6,0"/>
+                        <TextBox Text="{Binding FtpPutData, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource AtInput}" Width="220"/>
+                        <TextBlock Text="EOF:" Style="{StaticResource AtFieldLabel}" Margin="14,0,6,0"/>
+                        <ComboBox Style="{StaticResource AtCombo}" Width="90" SelectedValue="{Binding FtpPutEof}" SelectedValuePath="Tag">
+                            <ComboBoxItem Content="0 起始包" Tag="0"/>
+                            <ComboBoxItem Content="1 最后包" Tag="1"/>
+                        </ComboBox>
+                        <Button Content="上传文件" Command="{Binding FtpPutCommand}" Style="{StaticResource AtButton}"
+                                ToolTip="命令 +MYFTPPUT= · 向 FTP 服务器上传文件（手册 8.14）"/>
+                    </WrapPanel>
+                </StackPanel>
+            </GroupBox>
+
+            <GroupBox Header="模组网关 +ZDHCPCFG（修改后需重启设备生效）" Style="{StaticResource AtGroupBox}">
+                <StackPanel>
+                    <WrapPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,16,0">
+                            <TextBlock Text="网关:" Style="{StaticResource AtFieldLabel}" Margin="3,0,6,0"/>
+                            <TextBox Text="{Binding DhcpServer}" Style="{StaticResource AtInput}" Width="130"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="掩码:" Style="{StaticResource AtFieldLabel}" Margin="3,0,6,0"/>
+                            <TextBox Text="{Binding DhcpMask}" Style="{StaticResource AtInput}" Width="130"/>
+                        </StackPanel>
+                    </WrapPanel>
+                    <WrapPanel Margin="0,6,0,0">
+                        <StackPanel Orientation="Horizontal" Margin="0,0,16,0">
+                            <TextBlock Text="池起始:" Style="{StaticResource AtFieldLabel}" Margin="3,0,6,0"/>
+                            <TextBox Text="{Binding DhcpStart}" Style="{StaticResource AtInput}" Width="130"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,16,0">
+                            <TextBlock Text="池结束:" Style="{StaticResource AtFieldLabel}" Margin="3,0,6,0"/>
+                            <TextBox Text="{Binding DhcpEnd}" Style="{StaticResource AtInput}" Width="130"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="租约(h):" Style="{StaticResource AtFieldLabel}" Margin="3,0,6,0"/>
+                            <TextBox Text="{Binding DhcpLease}" Style="{StaticResource AtInput}" Width="55"/>
+                        </StackPanel>
+                    </WrapPanel>
+                    <WrapPanel Margin="0,6,0,0">
+                        <Button Content="设置网关" Command="{Binding SetDhcpCommand}" Style="{StaticResource AtButton}"
+                                ToolTip="命令 +ZDHCPCFG= · 修改模组 DHCP 网关参数（手册 8.10）"/>
+                        <Button Content="查询网关" Command="{Binding QueryDhcpCommand}" Style="{StaticResource AtButton}"
+                                ToolTip="命令 +ZDHCPCFG? · 查询模组 DHCP 网关参数（手册 8.10）"/>
+                    </WrapPanel>
+                </StackPanel>
+            </GroupBox>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

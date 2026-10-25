@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <LangVersion>10.0</LangVersion>
+    <SuppressTfmSupportBuildWarnings>true</SuppressTfmSupportBuildWarnings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- 必须与 TargetFramework(net6.0) 匹配：10.x 只提供 net8+ 实现，
+         net6.0 项目会回退到 netstandard2.0 占位程序集，运行时直接抛
+         PlatformNotSupportedException("System.IO.Ports is currently only supported on Windows.") -->
+    <PackageReference Include="System.IO.Ports" Version="6.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Zm9011.Services.Interfaces\Zm9011.Services.Interfaces.csproj" />
+  </ItemGroup>
+
+</Project>

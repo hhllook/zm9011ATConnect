@@ -1,0 +1,150 @@
+<UserControl x:Class="Zm9011.Modules.ModuleName.Views.DataView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:prism="http://prismlibrary.com/"
+             prism:ViewModelLocator.AutoWireViewModel="True">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel MaxWidth="1180" HorizontalAlignment="Stretch">
+
+            <GroupBox Header="联网 +ZIPCALL（USB/RNDIS 模式，含自动拨号）" Style="{StaticResource AtGroupBox}">
+                <WrapPanel>
+                    <TextBlock Text="state:" Style="{StaticResource AtFieldLabel}" Margin="3,0,6,0"/>
+                    <ComboBox Style="{StaticResource AtCombo}" Width="150" SelectedValue="{Binding ZipcallState}" SelectedValuePath="Tag">
+                        <ComboBoxItem Content="1 激活" Tag="1"/>
+                        <ComboBoxItem Content="0 去激活" Tag="0"/>
+                        <ComboBoxItem Content="2 关自动拨号" Tag="2"/>
+                        <ComboBoxItem Content="3 开自动拨号" Tag="3"/>
+                    </ComboBox>
+                    <Button Content="联网设置" Command="{Binding DialCommand}" Style="{StaticResource AtButton}"
+                            ToolTip="命令 +ZIPCALL= · 联网 / 去激活 / 自动拨号开关（手册 4.1）"/>
+                    <Button Content="查询联网状态" Command="{Binding QueryDialCommand}" Style="{StaticResource AtButton}"
+                            ToolTip="命令 +ZIPCALL? · 查询当前联网状态（手册 4.1）"/>
+                </WrapPanel>
+            </GroupBox>
+
+            <GroupBox Header="PDP 会话参数 +ZIPCFG（USB 模式）" Style="{StaticResource AtGroupBox}">
+                <StackPanel>
+                    <WrapPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,14,0">
+                            <TextBlock Text="APN:" Style="{StaticResource AtFieldLabel}" Margin="3,0,6,0"/>
+                            <TextBox Text="{Binding Apn}" Style="{StaticResource AtInput}" Width="150"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,14,0">
+                            <TextBlock Text="PDP 类型:" Style="{StaticResource AtFieldLabel}" Margin="3,0,6,0"/>
+                            <ComboBox Style="{StaticResource AtCombo}" Width="110" SelectedValue="{Binding PdpType}" SelectedValuePath="Tag">
+                                <ComboBoxItem Content="1 IPv4" Tag="1"/>
+                                <ComboBoxItem Content="2 IPv6" Tag="2"/>
+                                <ComboBoxItem Content="3 IPv4v6" Tag="3"/>
+                            </ComboBox>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,14,0">
+                            <TextBlock Text="用户名:" Style="{StaticResource AtFieldLabel}" Margin="3,0,6,0"/>
+                            <TextBox Text="{Binding Username}" Style="{StaticResource AtInput}" Width="110"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="密码:" Style="{StaticResource AtFieldLabel}" Margin="3,0,6,0"/>
+                            <TextBox Text="{Binding Password}" Style="{StaticResource AtInput}" Width="110"/>
+                        </StackPanel>
+                    </WrapPanel>
+                    <WrapPanel Margin="0,6,0,0">
+                        <StackPanel Orientation="Horizontal" Margin="0,0,14,0">
+                            <TextBlock Text="鉴权:" Style="{StaticResource AtFieldLabel}" Margin="3,0,6,0"/>
+                            <ComboBox ItemsSource="{Binding AuthTypes}" SelectedItem="{Binding AuthType}" Style="{StaticResource AtCombo}" Width="100"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,14,0">
+                            <TextBlock Text="数据类型:" Style="{StaticResource AtFieldLabel}" Margin="3,0,6,0"/>
+                            <ComboBox Style="{StaticResource AtCombo}" Width="150" SelectedValue="{Binding DataType}" SelectedValuePath="Tag">
+                                <ComboBoxItem Content="(默认私网)" Tag=""/>
+                                <ComboBoxItem Content="priv-ip 私网" Tag="priv-ip"/>
+                                <ComboBoxItem Content="pub-ip 公网" Tag="pub-ip"/>
+                                <ComboBoxItem Content="pas-pub-ip 被动公网" Tag="pas-pub-ip"/>
+                            </ComboBox>
+                        </StackPanel>
+                        <Button Content="设置 PDP" Command="{Binding SetZipcfgCommand}" Style="{StaticResource AtButton}"
+                                ToolTip="命令 +ZIPCFG= · 设置 PDP 会话参数（手册 4.2）"/>
+                        <Button Content="查询 PDP" Command="{Binding QueryZipcfgCommand}" Style="{StaticResource AtButton}"
+                                ToolTip="命令 +ZIPCFG? · 查询 PDP 会话参数（手册 4.2）"/>
+                    </WrapPanel>
+                </StackPanel>
+            </GroupBox>
+
+            <GroupBox Header="流量统计 +ZDCNT" Style="{StaticResource AtGroupBox}">
+                <WrapPanel>
+                    <Button Content="查询流量/速率" Command="{Binding QueryDcntCommand}" Style="{StaticResource AtButton}"
+                            ToolTip="命令 +ZDCNT? · 查询发送 / 接收流量与速率（手册 4.3）"/>
+                </WrapPanel>
+            </GroupBox>
+
+            <GroupBox Header="UART 模式联网 +ZIPCALL（带 cid）" Style="{StaticResource AtGroupBox}">
+                <WrapPanel>
+                    <TextBlock Text="state:" Style="{StaticResource AtFieldLabel}" Margin="3,0,6,0"/>
+                    <ComboBox Style="{StaticResource AtCombo}" Width="120" SelectedValue="{Binding UartZipcallState}" SelectedValuePath="Tag">
+                        <ComboBoxItem Content="1 激活" Tag="1"/>
+                        <ComboBoxItem Content="0 去激活" Tag="0"/>
+                    </ComboBox>
+                    <TextBlock Text="cid(1-4):" Style="{StaticResource AtFieldLabel}" Margin="14,0,6,0"/>
+                    <TextBox Text="{Binding UartCid}" Style="{StaticResource AtInput}" Width="55"/>
+                    <Button Content="UART 联网" Command="{Binding UartDialCommand}" Style="{StaticResource AtButton}"
+                            ToolTip="命令 +ZIPCALL= · UART 模式联网 / 去激活（手册 4.4）"/>
+                    <Button Content="查询 UART 联网" Command="{Binding QueryUartDialCommand}" Style="{StaticResource AtButton}"
+                            ToolTip="命令 +ZIPCALL? · 查询 UART 模式联网状态（手册 4.4）"/>
+                </WrapPanel>
+            </GroupBox>
+
+            <GroupBox Header="UART 模式 PDP 参数 +ZIPCFG（设置后需 CFUN=4→1 重启生效）" Style="{StaticResource AtGroupBox}">
+                <StackPanel>
+                    <WrapPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,14,0">
+                            <TextBlock Text="APN:" Style="{StaticResource AtFieldLabel}" Margin="3,0,6,0"/>
+                            <TextBox Text="{Binding UartApn}" Style="{StaticResource AtInput}" Width="150"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,14,0">
+                            <TextBlock Text="PDP 类型:" Style="{StaticResource AtFieldLabel}" Margin="3,0,6,0"/>
+                            <ComboBox Style="{StaticResource AtCombo}" Width="110" SelectedValue="{Binding UartPdpType}" SelectedValuePath="Tag">
+                                <ComboBoxItem Content="1 IPv4" Tag="1"/>
+                                <ComboBoxItem Content="2 IPv6" Tag="2"/>
+                                <ComboBoxItem Content="3 IPv4v6" Tag="3"/>
+                            </ComboBox>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,14,0">
+                            <TextBlock Text="用户名:" Style="{StaticResource AtFieldLabel}" Margin="3,0,6,0"/>
+                            <TextBox Text="{Binding UartUsername}" Style="{StaticResource AtInput}" Width="110"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="密码:" Style="{StaticResource AtFieldLabel}" Margin="3,0,6,0"/>
+                            <TextBox Text="{Binding UartPassword}" Style="{StaticResource AtInput}" Width="110"/>
+                        </StackPanel>
+                    </WrapPanel>
+                    <WrapPanel Margin="0,6,0,0">
+                        <StackPanel Orientation="Horizontal" Margin="0,0,14,0">
+                            <TextBlock Text="鉴权:" Style="{StaticResource AtFieldLabel}" Margin="3,0,6,0"/>
+                            <ComboBox ItemsSource="{Binding AuthTypes}" SelectedItem="{Binding UartAuthType}" Style="{StaticResource AtCombo}" Width="100"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,14,0">
+                            <TextBlock Text="cid:" Style="{StaticResource AtFieldLabel}" Margin="3,0,6,0"/>
+                            <ComboBox Style="{StaticResource AtCombo}" Width="70" SelectedValue="{Binding UartCid}">
+                                <ComboBoxItem Content="1"/>
+                                <ComboBoxItem Content="2"/>
+                                <ComboBoxItem Content="4"/>
+                            </ComboBox>
+                        </StackPanel>
+                        <Button Content="设置 UART PDP" Command="{Binding SetUartZipcfgCommand}" Style="{StaticResource AtButton}"
+                                ToolTip="命令 +ZIPCFG= · 设置 UART 模式 PDP 会话参数（手册 4.5）"/>
+                        <Button Content="查询 UART PDP" Command="{Binding QueryUartZipcfgCommand}" Style="{StaticResource AtButton}"
+                                ToolTip="命令 +ZIPCFG= · 按 cid 查询 UART 模式 PDP 会话参数（手册 4.5）"/>
+                    </WrapPanel>
+                </StackPanel>
+            </GroupBox>
+
+            <GroupBox Header="IP 地址查询 +CGPADDR" Style="{StaticResource AtGroupBox}">
+                <WrapPanel>
+                    <TextBlock Text="cid:" Style="{StaticResource AtFieldLabel}" Margin="3,0,6,0"/>
+                    <TextBox Text="{Binding Cid}" Style="{StaticResource AtInput}" Width="55"/>
+                    <Button Content="查询 IP" Command="{Binding QueryIpAddrCommand}" Style="{StaticResource AtButton}"
+                            ToolTip="命令 +CGPADDR · 查询 PDP 分配的 IP 地址；cid 为 0 时查询全部（手册 4.6）"/>
+                </WrapPanel>
+            </GroupBox>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

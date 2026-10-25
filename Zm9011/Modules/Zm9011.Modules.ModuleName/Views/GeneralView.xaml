@@ -1,0 +1,206 @@
+<UserControl x:Class="Zm9011.Modules.ModuleName.Views.GeneralView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:prism="http://prismlibrary.com/"
+             prism:ViewModelLocator.AutoWireViewModel="True">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel MaxWidth="1180" HorizontalAlignment="Stretch">
+
+            <GroupBox Header="设备信息查询" Style="{StaticResource AtGroupBox}">
+                <WrapPanel>
+                    <Button Content="软件版本" Command="{Binding QueryVersionCommand}" Style="{StaticResource AtButton}"
+                            ToolTip="命令 +CGMR · 查询软件外部版本号（手册 2.2）"/>
+                    <Button Content="设备机型" Command="{Binding QueryModelCommand}" Style="{StaticResource AtButton}"
+                            ToolTip="命令 +CGMM · 查询设备机型（手册 2.3）"/>
+                    <Button Content="IMSI" Command="{Binding QueryImsiCommand}" Style="{StaticResource AtButton}"
+                            ToolTip="命令 +CIMI · 查询 IMSI（手册 2.4）"/>
+                    <Button Content="IMEI" Command="{Binding QueryImeiCommand}" Style="{StaticResource AtButton}"
+                            ToolTip="命令 +CGSN · 查询 IMEI（手册 2.5）"/>
+                    <Button Content="制造商" Command="{Binding QueryManufacturerCommand}" Style="{StaticResource AtButton}"
+                            ToolTip="命令 +CGMI · 查询生产制造商（手册 2.6）"/>
+                    <Button Content="产品信息" Command="{Binding QueryProductInfoCommand}" Style="{StaticResource AtButton}"
+                            ToolTip="命令 ATI · 查询产品信息（手册 2.19）"/>
+                    <Button Content="用户号码" Command="{Binding QueryUserNumberCommand}" Style="{StaticResource AtButton}"
+                            ToolTip="命令 +CNUM · 查询用户号码（手册 2.8）"/>
+                </WrapPanel>
+            </GroupBox>
+
+            <GroupBox Header="PIN 码管理" Style="{StaticResource AtGroupBox}">
+                <WrapPanel>
+                    <Button Content="查询 PIN 状态" Command="{Binding QueryPinCommand}" Style="{StaticResource AtButton}"
+                            ToolTip="命令 +CPIN? · 查询 PIN 码状态（手册 2.7）"/>
+                    <StackPanel Orientation="Horizontal" Margin="12,0,0,0">
+                        <TextBlock Text="PIN/PUK 码:" Style="{StaticResource AtFieldLabel}"/>
+                        <TextBox Text="{Binding PinCode, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource AtInput}" Width="150"
+                                 ToolTip="填写 4-8 位 PIN 码或 PUK 码"/>
+                    </StackPanel>
+                    <Button Content="校验解锁" Command="{Binding EnterPinCommand}" Style="{StaticResource AtButton}"
+                            ToolTip="命令 +CPIN= · 校验或解锁 PIN/PUK 码（手册 2.7）"/>
+                </WrapPanel>
+            </GroupBox>
+
+            <GroupBox Header="重启 / 关机 / 恢复出厂" Style="{StaticResource AtGroupBox}">
+                <StackPanel>
+                    <WrapPanel>
+                        <Button Content="软重启" Command="{Binding SoftRestartCommand}" Style="{StaticResource AtButton}"
+                                ToolTip="命令 +ZRTEMP=2 · 软重启模组（手册 2.9）"/>
+                        <Button Content="恢复出厂" Command="{Binding FactoryResetCommand}" Style="{StaticResource AtButton}"
+                                ToolTip="命令 +ZRTEMP=3 · 恢复出厂设置（手册 2.10）"/>
+                    </WrapPanel>
+                    <WrapPanel Margin="0,6,0,0">
+                        <TextBlock Text="ZSOFTRESET:" Style="{StaticResource AtFieldLabel}" Margin="3,0,6,0"/>
+                        <ComboBox Style="{StaticResource AtCombo}" Width="130" SelectedValue="{Binding SoftResetFlag}" SelectedValuePath="Tag"
+                                  ToolTip="0 关机 / 1 重启">
+                            <ComboBoxItem Content="1 重启" Tag="1"/>
+                            <ComboBoxItem Content="0 关机" Tag="0"/>
+                        </ComboBox>
+                        <Button Content="软件重启" Command="{Binding SoftResetCommand}" Style="{StaticResource AtButton}"
+                                ToolTip="命令 +ZSOFTRESET · 软件重启，参数 0 关机 / 1 重启（手册 2.16）"/>
+                    </WrapPanel>
+                    <WrapPanel Margin="0,6,0,0">
+                        <TextBlock Text="ZRESET:" Style="{StaticResource AtFieldLabel}" Margin="3,0,6,0"/>
+                        <ComboBox Style="{StaticResource AtCombo}" Width="130" SelectedValue="{Binding ZResetFlag}" SelectedValuePath="Tag"
+                                  ToolTip="0 恢复并重启 / 1 恢复不重启">
+                            <ComboBoxItem Content="0 并重启" Tag="0"/>
+                            <ComboBoxItem Content="1 不重启" Tag="1"/>
+                        </ComboBox>
+                        <Button Content="软件恢复出厂" Command="{Binding ZResetCommand}" Style="{StaticResource AtButton}"
+                                ToolTip="命令 +ZRESET · 软件恢复出厂设置，参数 0 恢复并重启 / 1 恢复不重启（手册 2.17）"/>
+                    </WrapPanel>
+                    <WrapPanel Margin="0,6,0,0">
+                        <TextBlock Text="QPOWD:" Style="{StaticResource AtFieldLabel}" Margin="3,0,6,0"/>
+                        <ComboBox Style="{StaticResource AtCombo}" Width="130" SelectedValue="{Binding PowerOffFlag}" SelectedValuePath="Tag"
+                                  ToolTip="0 强制掉电 / 1 正常关机">
+                            <ComboBoxItem Content="1 正常" Tag="1"/>
+                            <ComboBoxItem Content="0 强制" Tag="0"/>
+                        </ComboBox>
+                        <Button Content="关机" Command="{Binding PowerOffCommand}" Style="{StaticResource AtButton}"
+                                ToolTip="命令 +QPOWD · 设备关机，参数 0 强制掉电 / 1 正常关机（手册 2.18）"/>
+                    </WrapPanel>
+                </StackPanel>
+            </GroupBox>
+
+            <GroupBox Header="数据/命令模式切换" Style="{StaticResource AtGroupBox}">
+                <WrapPanel>
+                    <Button Content="退出数据模式" Command="{Binding ExitDataModeCommand}" Style="{StaticResource AtButton}"
+                            ToolTip="命令 +++ · 退出数据模式回到命令模式，前后需静默 1 秒（手册 2.11）"/>
+                    <Button Content="进入数据模式" Command="{Binding EnterDataModeCommand}" Style="{StaticResource AtButton}"
+                            ToolTip="命令 ATO · 进入数据模式（手册 2.12）"/>
+                </WrapPanel>
+            </GroupBox>
+
+            <GroupBox Header="AT 参数与格式" Style="{StaticResource AtGroupBox}">
+                <StackPanel>
+                    <WrapPanel>
+                        <Button Content="保存配置" Command="{Binding SaveConfigCommand}" Style="{StaticResource AtButton}"
+                                ToolTip="命令 AT&amp;W · 保存用户设置参数到配置文件（手册 2.24）"/>
+                        <Button Content="恢复配置" Command="{Binding RestoreConfigCommand}" Style="{StaticResource AtButton}"
+                                ToolTip="命令 ATZ0 · 恢复配置文件中的 AT 参数（手册 2.25）"/>
+                    </WrapPanel>
+                    <WrapPanel Margin="0,6,0,0">
+                        <TextBlock Text="ATE:" Style="{StaticResource AtFieldLabel}" Margin="3,0,6,0"/>
+                        <ComboBox Style="{StaticResource AtCombo}" Width="90" SelectedValue="{Binding EchoValue}" SelectedValuePath="Tag">
+                            <ComboBoxItem Content="0 关" Tag="0"/>
+                            <ComboBoxItem Content="1 开" Tag="1"/>
+                        </ComboBox>
+                        <Button Content="设置回显" Command="{Binding SetEchoCommand}" Style="{StaticResource AtButton}"
+                                ToolTip="命令 ATE · 设置命令响应回显：0 关闭 / 1 开启（手册 2.1）"/>
+                    </WrapPanel>
+                    <WrapPanel Margin="0,6,0,0">
+                        <TextBlock Text="ATQ:" Style="{StaticResource AtFieldLabel}" Margin="3,0,6,0"/>
+                        <ComboBox Style="{StaticResource AtCombo}" Width="120" SelectedValue="{Binding ResultMode}" SelectedValuePath="Tag">
+                            <ComboBoxItem Content="0 传输结果" Tag="0"/>
+                            <ComboBoxItem Content="1 不传输" Tag="1"/>
+                        </ComboBox>
+                        <Button Content="设置结果模式" Command="{Binding SetResultModeCommand}" Style="{StaticResource AtButton}"
+                                ToolTip="命令 ATQ · 设置结果显示模式：0 返回结果 / 1 不返回（手册 2.26）"/>
+                    </WrapPanel>
+                    <WrapPanel Margin="0,6,0,0">
+                        <TextBlock Text="ATV:" Style="{StaticResource AtFieldLabel}" Margin="3,0,6,0"/>
+                        <ComboBox Style="{StaticResource AtCombo}" Width="90" SelectedValue="{Binding ReturnFormat}" SelectedValuePath="Tag">
+                            <ComboBoxItem Content="1 标准" Tag="1"/>
+                            <ComboBoxItem Content="0 简单" Tag="0"/>
+                        </ComboBox>
+                        <Button Content="设置返回格式" Command="{Binding SetReturnFormatCommand}" Style="{StaticResource AtButton}"
+                                ToolTip="命令 ATV · 设置命令返回格式：0 简单 / 1 标准（手册 2.27）"/>
+                    </WrapPanel>
+                    <WrapPanel Margin="0,6,0,0">
+                        <TextBlock Text="+CMEE:" Style="{StaticResource AtFieldLabel}" Margin="3,0,6,0"/>
+                        <ComboBox Style="{StaticResource AtCombo}" Width="110" SelectedValue="{Binding CmeeValue}" SelectedValuePath="Tag">
+                            <ComboBoxItem Content="0 禁用" Tag="0"/>
+                            <ComboBoxItem Content="1 数字" Tag="1"/>
+                            <ComboBoxItem Content="2 详细" Tag="2"/>
+                        </ComboBox>
+                        <Button Content="设置错误报告" Command="{Binding SetCmeeCommand}" Style="{StaticResource AtButton}"
+                                ToolTip="命令 +CMEE · 设置错误报告模式：0 禁用 / 1 数字 / 2 详细文本（手册 2.28）"/>
+                    </WrapPanel>
+                </StackPanel>
+            </GroupBox>
+
+            <GroupBox Header="字符集 +CSCS" Style="{StaticResource AtGroupBox}">
+                <WrapPanel>
+                    <TextBlock Text="字符集:" Style="{StaticResource AtFieldLabel}" Margin="3,0,6,0"/>
+                    <ComboBox Style="{StaticResource AtCombo}" Width="110" SelectedValue="{Binding Charset}" SelectedValuePath="Tag">
+                        <ComboBoxItem Content="GSM" Tag="GSM"/>
+                        <ComboBoxItem Content="IRA" Tag="IRA"/>
+                        <ComboBoxItem Content="HEX" Tag="HEX"/>
+                        <ComboBoxItem Content="UCS2" Tag="UCS2"/>
+                    </ComboBox>
+                    <Button Content="设置字符集" Command="{Binding SetCharsetCommand}" Style="{StaticResource AtButton}"
+                            ToolTip="命令 +CSCS= · 设置 TE 字符集：GSM / IRA / HEX / UCS2（手册 2.29）"/>
+                    <Button Content="查询字符集" Command="{Binding QueryCharsetCommand}" Style="{StaticResource AtButton}"
+                            ToolTip="命令 +CSCS? · 查询当前 TE 字符集（手册 2.29）"/>
+                </WrapPanel>
+            </GroupBox>
+
+            <GroupBox Header="时钟管理" Style="{StaticResource AtGroupBox}">
+                <WrapPanel>
+                    <Button Content="查询 NITZ 时间" Command="{Binding QueryNitzCommand}" Style="{StaticResource AtButton}"
+                            ToolTip="命令 +ZNITZ? · 查询网络下发时间 NITZ（手册 3.6）"/>
+                    <Button Content="查询模组时钟" Command="{Binding QueryClockCommand}" Style="{StaticResource AtButton}"
+                            ToolTip="命令 +CCLK? · 查询模组时钟，发送前会先执行 +ZNITZ? 同步时间（手册 2.30）"/>
+                    <Button Content="查询系统时间" Command="{Binding QuerySysTimeCommand}" Style="{StaticResource AtButton}"
+                            ToolTip="命令 +ZSYSTIME? · 查询系统时间，发送前会先执行 +ZNITZ? 同步时间（手册 3.12）"/>
+                </WrapPanel>
+            </GroupBox>
+
+            <GroupBox Header="操作模式 +CFUN" Style="{StaticResource AtGroupBox}">
+                <StackPanel>
+                    <WrapPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,14,0">
+                            <TextBlock Text="功能模式:" Style="{StaticResource AtFieldLabel}" Margin="3,0,6,0"/>
+                            <ComboBox Style="{StaticResource AtCombo}" Width="120" SelectedValue="{Binding FunMode}" SelectedValuePath="Tag">
+                                <ComboBoxItem Content="1 完全功能" Tag="1"/>
+                                <ComboBoxItem Content="0 最小功能" Tag="0"/>
+                                <ComboBoxItem Content="4 关闭射频" Tag="4"/>
+                            </ComboBox>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="前置重启:" Style="{StaticResource AtFieldLabel}" Margin="3,0,6,0"/>
+                            <ComboBox Style="{StaticResource AtCombo}" Width="90" SelectedValue="{Binding FunReset}" SelectedValuePath="Tag">
+                                <ComboBoxItem Content="0 否" Tag="0"/>
+                                <ComboBoxItem Content="1 是" Tag="1"/>
+                            </ComboBox>
+                        </StackPanel>
+                    </WrapPanel>
+                    <WrapPanel Margin="0,6,0,0">
+                        <Button Content="设置 CFUN" Command="{Binding SetFunModeCommand}" Style="{StaticResource AtButton}"
+                                ToolTip="命令 +CFUN= · 设置操作模式：0 最小功能 / 1 完全功能 / 4 关闭射频（手册 2.31）"/>
+                        <Button Content="查询 CFUN" Command="{Binding QueryFunModeCommand}" Style="{StaticResource AtButton}"
+                                ToolTip="命令 +CFUN? · 查询当前操作模式（手册 2.31）"/>
+                    </WrapPanel>
+                </StackPanel>
+            </GroupBox>
+
+            <GroupBox Header="日志开关 +ZOPENLOG（密钥由中兴按 IMEI 提供）" Style="{StaticResource AtGroupBox}">
+                <WrapPanel>
+                    <TextBox Text="{Binding LogKey, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource AtInput}" Width="420"
+                             ToolTip="填写中兴按 IMEI 提供的日志密钥"/>
+                    <Button Content="打开日志" Command="{Binding OpenLogCommand}" Style="{StaticResource AtButton}"
+                            ToolTip="命令 +ZOPENLOG · MBBLogTool 工具日志开关（手册 2.32）"/>
+                </WrapPanel>
+            </GroupBox>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>
