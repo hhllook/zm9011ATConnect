@@ -3,7 +3,7 @@
 Windows 11 下为 **ZTE ZM9011**（Unisoc 平台，`USB\VID_19D2&PID_1710`）启用 AT 串口的完整工具集：
 
 - **driver** — 禁用驱动签名强制后安装修改版 INF 的流程、安装与试探脚本
-
+- **Zm9011** — 为AT指令软件
 ## 背景
 
 ZM9011 的 MI_02 ~ MI_05 是四个 USB 描述符完全相同的厂商私有口（`Class_ff&SubClass_00&Prot_00`），原厂 `sprdvcom.inf`（UNISOC WHQL 包）不含本机 PID，Windows 全部枚举为 Error。本仓库把四个口映射为串口，装完后试探确认 AT 口。
