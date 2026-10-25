@@ -19,3 +19,9 @@ ZM9011 的 MI_02 ~ MI_05 是四个 USB 描述符完全相同的厂商私有口�
    powershell -ExecutionPolicy Bypass -File .\install_driver.ps1
    powershell -ExecutionPolicy Bypass -File .\test_at.ps1      # 确认哪些口返回 OK
    ```
+3.检测设备管理器是否读取到四个串口
+
+4.解压打开软件,即可at调试指令
+
+
+
