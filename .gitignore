@@ -361,3 +361,5 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+# 厂商 AT 指令手册（私有资料，不公开、不入库）
+/AT指令手册/

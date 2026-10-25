@@ -5,7 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## 项目概述
 
 中兴通讯 ZM9011 模组 AT 指令调试软件。WPF + Prism.DryIoc 8.1.97，目标框架 net6.0-windows。
-指令规范依据 `AT指令手册\中兴通讯_ZM9011_模组AT指令手册.txt`（V3.9，含各章节语法结构与附录 A/B/C 错误码表）。
+指令规范依据 `AT指令手册\中兴通讯_ZM9011_模组AT指令手册.txt`（V3.9，含各章节语法结构与附录 A/B/C 错误码表）。该手册为厂商私有资料，已在 `.gitignore` 中排除，不随仓库分发。
 
 ## 常用命令
 
