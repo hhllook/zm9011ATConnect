@@ -2,7 +2,7 @@
 
 Windows 11 下为 **ZTE ZM9011**（Unisoc 平台，`USB\VID_19D2&PID_1710`）启用 AT 串口的完整工具集：
 
-- **zm9011_driver_mod** — 禁用驱动签名强制后安装修改版 INF 的流程、安装与试探脚本
+- **driver** — 禁用驱动签名强制后安装修改版 INF 的流程、安装与试探脚本
 
 ## 背景
 
@@ -16,5 +16,6 @@ ZM9011 的 MI_02 ~ MI_05 是四个 USB 描述符完全相同的厂商私有口�
 2. 管理员 PowerShell：
    ```powershell
    cd driver
-   powershell -ExecutionPolicy Bypass -File .\scripts\install_driver.ps1
-   powershell -ExecutionPolicy Bypass -File .\scripts\test_at.ps1      # 确认哪些口返回 OK
+   powershell -ExecutionPolicy Bypass -File .\install_driver.ps1
+   powershell -ExecutionPolicy Bypass -File .\test_at.ps1      # 确认哪些口返回 OK
+   ```

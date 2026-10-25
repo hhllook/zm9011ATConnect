@@ -5,7 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## 项目概述
 
 中兴通讯 ZM9011 模组 AT 指令调试软件。WPF + Prism.DryIoc 8.1.97，目标框架 net6.0-windows。
-指令规范依据 `中兴通讯_ZM9011_模组AT指令手册\中兴通讯_ZM9011_模组AT指令手册.txt`（V3.9，含各章节语法结构与附录 A/B/C 错误码表）。
+指令规范依据 `AT指令手册\中兴通讯_ZM9011_模组AT指令手册.txt`（V3.9，含各章节语法结构与附录 A/B/C 错误码表）。
 
 ## 常用命令
 
@@ -75,11 +75,3 @@ Zm9011.slnx
 - **`+++` 退出透传**需前后 1 秒静默期（手册 2.11），实现里用 `Task.Delay(1000)` + `SendRaw("+++")`，不走 AT 队列。
 - **中文短信 TEXT 模式**：先 `AT+CSMP=17,255,0,8`（UCS2），正文转 UCS2 HEX（`ToUcs2Hex`），发完 `AT+CSMP=,,0,0` 恢复默认（手册 5.2.4）。
 - **FOTA 分包推送**（手册 6.10）：set → mid/end 分包（USB ≤512 字节、UART ≤1024 字节 HEX）→ check；模组路径必须 `/zterw/cache/` 开头。
-
-## OpenWrt 版（OpenWrt/zm9011d）
-
-- 独立的 Go 工程（模块 `zm9011d`），不参与 `Zm9011.slnx`；Web 前端通过 `go:embed` 内嵌，无 Node/nginx 依赖。
-- 目标：ARM64（Cortex-A53/IPQ6000）OpenWrt；单文件静态二进制，串口 + HTTP + SSE + JSON 存储。
-- 构建：Windows 用 `OpenWrt/build.ps1`，Linux/WSL 用 `OpenWrt/build.sh`；产物在 `OpenWrt/zm9011d/dist/`。
-- 测试：`cd OpenWrt/zm9011d && go test ./...`（PDU 解码、验证码、UCI 配置）。
-- 部署、AT 口探测、与路由器 WAN 拨号进程共存的注意事项见 `OpenWrt/README.md`。

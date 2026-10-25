@@ -38,7 +38,7 @@
    → 疑难解答 → 高级选项 → 启动设置 → 重新启动 → 按 **7**（禁用驱动程序强制签名）
 2. 进入系统后，以**管理员**运行 PowerShell：
    ```
-   cd D:\zm9011\zm9011_driver_mod
+   cd <仓库根目录>\driver
    powershell -ExecutionPolicy Bypass -File .\install_driver.ps1
    ```
    脚本会打印 Secure Boot 状态、设备状态，并用 `pnputil` 安装、重新扫描。
