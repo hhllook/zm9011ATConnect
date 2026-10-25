@@ -12,16 +12,25 @@ ZM9011 的 MI_02 ~ MI_05 是四个 USB 描述符完全相同的厂商私有口�
 
 ## 快速开始
 
-1. BIOS 关闭 Secure Boot；开机进"启动设置"按 **7**（禁用驱动程序强制签名）
-2. 管理员 PowerShell：
-   ```powershell
-   cd driver
+1. BIOS 关闭 Secure Boot；# ZTE ZM9011（Unisoc 平台）AT 口驱动修改包
+2. 重启进入：设置 → 系统 → 恢复 → 高级启动 → 立即重新启动
+   → 疑难解答 → 高级选项 → 启动设置 → 重新启动 → 按 **7**（禁用驱动程序强制签名）
+3. 进入系统后，以**管理员**运行 PowerShell：
+   ```
+   cd <仓库根目录>\driver
    powershell -ExecutionPolicy Bypass -File .\install_driver.ps1
+   ```
+   脚本会打印 Secure Boot 状态、设备状态，并用 `pnputil` 安装、重新扫描。
+   
+4. 安装完成后重启回正常模式，驱动应继续可用（`sprdvcom.sys` 自身签名有效，
+   缺失的只是 INF 的 WHQL 目录签名，该签名只在安装阶段被检查）。
+
+5. 管理员 PowerShell：
+   ```powershell
+   cd <仓库根目录>\driver
    powershell -ExecutionPolicy Bypass -File .\test_at.ps1      # 确认哪些口返回 OK
    ```
-3.检测设备管理器是否读取到四个串口
-
-4.解压打开软件,即可at调试指令
+6.解压打开软件,选择AT串口,即可at调试指令
 
 
 
