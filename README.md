@@ -32,5 +32,6 @@ ZM9011 的 MI_02 ~ MI_05 是四个 USB 描述符完全相同的厂商私有口�
    ```
 6.解压打开软件,选择AT串口,即可at调试指令
 
+<img width="794" height="510" alt="zm9011_general_restore" src="https://github.com/user-attachments/assets/a6daade4-23c0-4832-81c6-142aa26b5e6b" />
 
 
