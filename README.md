@@ -2,7 +2,7 @@
 
 Windows 11 下为 **ZTE ZM9011**（Unisoc 平台，`USB\VID_19D2&PID_1710`）启用 AT 串口的完整工具集：
 
-- **driver/** — 禁用驱动签名强制后安装修改版 INF 的流程、安装与试探脚本
+- **zm9011_driver_mod** — 禁用驱动签名强制后安装修改版 INF 的流程、安装与试探脚本
 - **DesktopATConnect/** — 图形界面 AT 工具，针对 ZM9011 强制置高 DTR/RTS
 
 ## 背景
