@@ -1,2 +1,2 @@
 # zm9011ATConnect
-zm9011的第三方签名驱动和适配的AT桌面软件(zm9011_driver and DesktopATConnect)
+zm9011的禁用驱动签名强制和适配的AT桌面软件(zm9011_driver and DesktopATConnect)
